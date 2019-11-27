@@ -1,0 +1,573 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema enfermagemdb
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema enfermagemdb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `enfermagemdb` DEFAULT CHARACTER SET latin1 ;
+USE `enfermagemdb` ;
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`cadastro_admin`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`cadastro_admin` (
+  `id_admin` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(60) NOT NULL,
+  `cpf` VARCHAR(11) NOT NULL,
+  `categoria` VARCHAR(60) NOT NULL,
+  `email` VARCHAR(60) NOT NULL,
+  `senha` VARCHAR(60) NOT NULL,
+  PRIMARY KEY (`id_admin`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`endereco_paciente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`endereco_paciente` (
+  `id_end` INT(11) NOT NULL AUTO_INCREMENT,
+  `rua` VARCHAR(60) NOT NULL,
+  `bairro` VARCHAR(60) NOT NULL,
+  `cidade` VARCHAR(30) NOT NULL,
+  `estado` VARCHAR(30) NOT NULL,
+  `paciente_id_paciente` INT(11) NOT NULL,
+  PRIMARY KEY (`id_end`),
+  INDEX `fk_endereco_paciente_paciente1_idx` (`paciente_id_paciente` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`instituicao`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`instituicao` (
+  `id_instituicao` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome_instituicao` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`id_instituicao`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`categoria`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`categoria` (
+  `id_categoria` INT NOT NULL AUTO_INCREMENT,
+  `categoria` VARCHAR(60) NOT NULL,
+  PRIMARY KEY (`id_categoria`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`enfermeiro`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`enfermeiro` (
+  `id_enfermeiro` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(60) NOT NULL,
+  `cpf` VARCHAR(11) NOT NULL,
+  `categoria` VARCHAR(50) NOT NULL,
+  `coren` VARCHAR(60) NOT NULL,
+  `email` VARCHAR(60) NOT NULL,
+  `senha` VARCHAR(60) NOT NULL,
+  `situacao` TINYINT(4) NOT NULL,
+  `cadastro_admin_id_admin` INT(11) NOT NULL,
+  `instituicao_id_instituicao` INT(11) NOT NULL,
+  `categoria_id_categoria` INT NOT NULL,
+  PRIMARY KEY (`id_enfermeiro`),
+  INDEX `fk_enfermeiro_cadastro_admin_idx` (`cadastro_admin_id_admin` ASC) VISIBLE,
+  INDEX `fk_enfermeiro_instituicao1_idx` (`instituicao_id_instituicao` ASC) VISIBLE,
+  INDEX `fk_enfermeiro_categoria1_idx` (`categoria_id_categoria` ASC) VISIBLE,
+  CONSTRAINT `fk_enfermeiro_cadastro_admin`
+    FOREIGN KEY (`cadastro_admin_id_admin`)
+    REFERENCES `enfermagemdb`.`cadastro_admin` (`id_admin`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_enfermeiro_instituicao1`
+    FOREIGN KEY (`instituicao_id_instituicao`)
+    REFERENCES `enfermagemdb`.`instituicao` (`id_instituicao`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_enfermeiro_categoria1`
+    FOREIGN KEY (`categoria_id_categoria`)
+    REFERENCES `enfermagemdb`.`categoria` (`id_categoria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`tecnico`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`tecnico` (
+  `id_tecnico` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(60) NOT NULL,
+  `cpf` VARCHAR(11) NOT NULL,
+  `categoria` VARCHAR(60) NOT NULL,
+  `coren` VARCHAR(60) NOT NULL,
+  `email` VARCHAR(60) NOT NULL,
+  `senha` VARCHAR(60) NOT NULL,
+  `situacao` TINYINT(4) NOT NULL,
+  `celular` VARCHAR(10) NOT NULL,
+  `cadastro_admin_id_admin` INT(11) NOT NULL,
+  `enfermeiro_id_enfermeiro` INT(11) NOT NULL,
+  `instituicao_id_instituicao` INT(11) NOT NULL,
+  `categoria_id_categoria` INT NOT NULL,
+  PRIMARY KEY (`id_tecnico`),
+  UNIQUE INDEX `coren_UNIQUE` (`coren` ASC) VISIBLE,
+  INDEX `fk_tecnico_cadastro_admin1_idx` (`cadastro_admin_id_admin` ASC) VISIBLE,
+  INDEX `fk_tecnico_enfermeiro1_idx` (`enfermeiro_id_enfermeiro` ASC) VISIBLE,
+  INDEX `fk_tecnico_instituicao1_idx` (`instituicao_id_instituicao` ASC) VISIBLE,
+  INDEX `fk_tecnico_categoria1_idx` (`categoria_id_categoria` ASC) VISIBLE,
+  CONSTRAINT `fk_tecnico_cadastro_admin1`
+    FOREIGN KEY (`cadastro_admin_id_admin`)
+    REFERENCES `enfermagemdb`.`cadastro_admin` (`id_admin`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tecnico_enfermeiro1`
+    FOREIGN KEY (`enfermeiro_id_enfermeiro`)
+    REFERENCES `enfermagemdb`.`enfermeiro` (`id_enfermeiro`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tecnico_instituicao1`
+    FOREIGN KEY (`instituicao_id_instituicao`)
+    REFERENCES `enfermagemdb`.`instituicao` (`id_instituicao`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_tecnico_categoria1`
+    FOREIGN KEY (`categoria_id_categoria`)
+    REFERENCES `enfermagemdb`.`categoria` (`id_categoria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`paciente`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`paciente` (
+  `id_paciente` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(60) NOT NULL,
+  `local_ferida` VARCHAR(110) NOT NULL,
+  `descricao_inicial_ferida` VARCHAR(400) NOT NULL,
+  `data_cadastro` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  `tecnico_id_tecnico` INT(11) NOT NULL,
+  PRIMARY KEY (`id_paciente`),
+  INDEX `fk_paciente_tecnico1_idx` (`tecnico_id_tecnico` ASC) VISIBLE,
+  CONSTRAINT `fk_paciente_tecnico1`
+    FOREIGN KEY (`tecnico_id_tecnico`)
+    REFERENCES `enfermagemdb`.`tecnico` (`id_tecnico`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `enfermagemdb`.`registro_atendimento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `enfermagemdb`.`registro_atendimento` (
+  `id_atendimento` INT(11) NOT NULL AUTO_INCREMENT,
+  `tipo_ferida` VARCHAR(100) NOT NULL,
+  `img_ferida` VARCHAR(60) NOT NULL,
+  `descricao_ferida` VARCHAR(500) NOT NULL,
+  `data_atendimento` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+  `cobertura_realizada` VARCHAR(200) NOT NULL,
+  `tecnico_id_tecnico` INT(11) NOT NULL,
+  `id_paciente` INT(11) NOT NULL,
+  PRIMARY KEY (`id_atendimento`),
+  INDEX `fk_registro_atendimento_tecnico1_idx` (`tecnico_id_tecnico` ASC) VISIBLE,
+  INDEX `fk_id_paciente` (`id_paciente` ASC) VISIBLE,
+  CONSTRAINT `fk_id_paciente`
+    FOREIGN KEY (`id_paciente`)
+    REFERENCES `enfermagemdb`.`paciente` (`id_paciente`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_registro_atendimento_tecnico1`
+    FOREIGN KEY (`tecnico_id_tecnico`)
+    REFERENCES `enfermagemdb`.`tecnico` (`id_tecnico`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+USE `enfermagemdb` ;
+
+-- -----------------------------------------------------
+-- procedure busca_tecnico
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `busca_tecnico`(id int)
+begin
+	select* from tecnico where id_tenico = id; 
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_admin
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_admin`(id int)
+begin
+	select * from cadastro_admin where id_admin = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_atendimentos_paciente
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_atendimentos_paciente`(id int)
+begin 
+	select * from registro_atendimento where id_paciente = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_atendimentos_tecnico
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_atendimentos_tecnico`(id int)
+begin 
+	select * from registro_atendimento where id_tecnico = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_enfermeiros
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_enfermeiros`(id int)
+begin
+	select * from enfermeiro where id_enfermeiro = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_instituicao
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_instituicao`(id int)
+begin 
+	select * from instituicao where id_instituicao = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_paciente
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_paciente`(nome varchar(60))
+begin
+	select * from paciente where nome = nome;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure lista_tecnicos
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `lista_tecnicos`()
+begin
+	select* from tecnico;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_adm
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_adm`(nome_adm varchar(60)
+,cpf varchar(11)
+,categoria varchar(60)
+,email varchar(60)
+,senha varchar(60)
+,instituicao int)
+begin
+	insert into cadastro_admin (nome,cpf,categoria,email,senha,instituicao_id_instituicao)
+		values (nome_adm
+        ,cpf 
+		,categoria 
+		,email 
+		,senha 
+		,instituicao);
+
+
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_endereco_cliente
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_endereco_cliente`(rua varchar(60)
+, bairro varchar(60)
+, cidade varchar(30)
+, estado varchar(30)
+, paciente int)
+begin
+	insert into endereco_cliente (rua,bairro,cidade,estado,paciente_id_paciente)
+		values (rua, bairro, cidade, estado, paciente);
+
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_enfermeiro
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_enfermeiro`(nome varchar(60),cpf varchar(11),categoria varchar(50),coren varchar(60),email varchar(60),senha varchar(60)
+,situacao TINYINT
+,id_adm int
+,instituicao int)
+begin
+	insert into enfermeiro (nome,cpf,categoria,coren,email,senha,situacao,cadastro_admin_id_admin,instituicao_id_instituicao)
+		values (nome
+,cpf
+,categoria
+,coren
+,email
+,senha
+,situacao
+,id_adm
+,instituicao);
+
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_instituicao
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_instituicao`(nome_instituicao varchar(50), id_enfermeiro int)
+begin 
+	insert into instituicao (nome_instituicao, id_enfermeiro)
+		values (nome_instituicao,enfermeiro_id_enfermeiro);
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_paciente
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_paciente`(nome varchar(60), local_ferida varchar(110), descricao_inicial_ferida varchar(400), data_cadastro timestamp, id_tecnico int)
+begin
+	insert into paciente (nome, local_ferida, descricao_inicial_ferida, data_cadastro, id_tecnico)
+		values (nome,local_ferida,descricao_inicial_ferida,data_cadastro,tecnico_id_tecnico);
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_registro_atendimento
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_registro_atendimento`(tipo_ferida varchar(100), img_ferida varchar(100), descricao_ferida varchar(500), data_atendimento timestamp, cobertura_utilizada varchar(200), id_tecnico int)
+begin
+	insert into registro_atendimento (tipo_ferida,img_ferida,descricao_ferida,data_atendimento,cobertura_realizada,tecnico_id_tecnico)
+		values (tipo_ferida, img_ferida, descricao_ferida, data_atendimento, cobertura_utilizada, id_tecnico);
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure sp_insert_tecnico
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_tecnico`(nome varchar(60), cpf varchar(60), categoria varchar(60), coren varchar(60), email varchar(60), senha varchar(60), situacao tinyint, celular varchar(10),id_admin int, id_enfermeiro int, instituicao int)
+begin
+	insert into tecnico (nome, cpf, categoria, coren, email, senha, situacao, instituicao, celular)
+		values (nome,cpf,categoria,coren,email,senha,situacao,celular,cadastro_admin_id_admin,enfermeiro_id_enfermeiro,instituicao_id_instituicao);
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_admin
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_admin`(id int, nome varchar(60), cpf varchar(11), categoria varchar(60), email varchar(60), senha varchar(60))
+begin
+	update cadastro_admin set nome = nome,
+						cpf = cpf,
+                        categoria =  categoria,
+                        email = email,
+                        senha = senha
+                        where id_admin = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_atendimento
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_atendimento`(id int, tipo_ferida varchar(100), img_ferida varchar(60), descricao_ferida varchar(400), data_atendimento timestamp, cobertura_utilizada varchar(200), id_tecnico int)
+begin
+	update registro_atendimento set tipo_ferida = tipo_ferida,
+								img_ferida = img_ferida,
+                                descricao_ferida = descricao_ferida,
+                                data_atendimento = data_atendimento,
+                                cobertura_realizada = cobertura_realizada,
+                                tecnico_id_tecnico = id_tecnico
+                                where id_atendimento = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_end_paciente
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_end_paciente`(id int, rua varchar(60), bairro varchar(60), cidade varchar(30), estado varchar(30), id_paciente int)
+begin
+	update endereco_paciente set rua = rua,
+						bairro = bairro,
+                        cidade = cidade,
+                        estado = estado,
+                        paciente_id_paciente = id_paciente
+                        where id_enfermeiro = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_enfermeiro
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_enfermeiro`(id int, nome varchar(60), cpf varchar(11), categoria varchar(60), coren varchar(60), email varchar(60), senha varchar(60), situacao tinyint, id_admin int, id_instituicao int)
+begin
+	update enfermeiro set nome = nome,
+					cpf = cpf,
+					categoria = categoria,
+                    coren = coren,
+                    email = email,
+                    senha = senha,
+                    situicao = situacao,
+                    cadastro_admin_id_admin = id_admin,
+                    instituicao_id_instituicao = id_instituicao
+                    where id_enfermeiro = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_instituicao
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_instituicao`(id int, nome_instituicao varchar(50))
+begin
+	update instituicao set nome_instituicao = nome_instituicao
+					   where id_instituicao = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_paciente
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_paciente`(id int, nome varchar(60), local_ferida varchar(110), descricao_inical_ferida varchar(400), data_cadastro timestamp, id_tecnico int)
+begin
+	update paciente set nome = nome,
+					local_ferida = local_ferida,
+                    descricao_inicial_feirida = descricao_inicial_ferida,
+                    data_cadastro = data_casdastro,
+                    tecnico_id_tecnico = id_tecnico
+                    where id_paciente = id;
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure update_tecnico
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `enfermagemdb`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_tecnico`(id int, nome varchar(60), cpf varchar(11), categoria varchar(60), coren varchar(60), senha varchar(60), situacao tinyint, celular varchar(10),id_admin int, id_enfermeiro int, instituicao int)
+begin
+	update tecnico set  nome = nome,	
+				cpf = cpf,
+				categoria = categoria,
+                coren = coren,
+                senha = senha,
+                situacao = situacao,
+                celular = celular,
+                cadastro_admin_id_admin = id_admin,
+                enfermeiro_id_enfermeiro = id_enfermeiro,
+                instituicao_id_instituicao = id_instituicao 
+                where id_tecnico = id;
+end$$
+
+DELIMITER ;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
